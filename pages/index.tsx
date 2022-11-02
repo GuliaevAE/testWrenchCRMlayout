@@ -1,8 +1,41 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { useState } from 'react'
+import axios from 'axios'
+import x from '../assets/x.svg'
+
 
 export default function Home() {
+  const [inpValue, setValue] = useState<string>('')
+  const [data, setData] = useState<{ value: string }[]>([])
+  function reqest(e: string) {
+    setValue(e)
+    // axios.post('http://localhost:8080/api/adress', { data: e }).then(res => setData(res.data.suggestions))
+    let url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address";
+    let token = "2ce9dec3db6777b0d6873bc06dea46dbe0a2ed78";
+    fetch(url, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Token " + token
+      },
+      body: JSON.stringify({ query: e })
+    })
+      .then(response => response.json())
+      .then(result => setData(result.suggestions))
+      .catch(error => console.log("error", error));
+
+  }
+
+  // function reqestFullAdress() {
+  //   axios.post('http://localhost:8080/api/fulladress', {data:inpValue}).then(res => console.log(res.data))
+  // }
+
+
+
   return (
     <div className={styles.container}>
       <Head>
@@ -11,61 +44,32 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <main>
+        <div className=' bg-[white] text-[black] flex flex-col mt-[20px] '>
+          <span className='text-[20px] font-[700] '>Поиск адресов</span>
+          <span className='my-[10px]'>Введите интересующий вас адрес</span>
+          <div className='h-[45px] flex justify-between'>
+            <div className='w-[80%] relative'>
+              <input onChange={(e) => reqest(e.target.value)} type="text" value={inpValue} className='border-[#4F27BF] pr-[30px] border-2 rounded-[10px] px-4 h-full w-full' />
+              {inpValue && <Image onClick={() => setValue('')} src={x} height={15} width={15} className='absolute top-0 bottom-0 mt-auto mb-auto right-[10px] opacity-50 hover:opacity-100' alt='' />}
+            </div>
+            <button onClick={() => reqest(inpValue)} className='min-w-[80px] bg-[#4F27BF] rounded-[10px] text-[white] px-4 h-full w-[20%] ml-[20px]'>Поиск</button>
+          </div>
+          <div className='rounded-[10px] shadow-[0_4px_8px_0_#02006140] mt-[20px] p-3  '>
+            <span className='font-[800] text-[20px]'>Адреса</span>
+            <hr />
+            {inpValue&&data.map(x => {
+              return (<div className='my-[25px]' key={x.value}>
+                <span onClick={() => setValue(x.value)} className='hover:text-[#4F27BF]'>{x.value}</span>
+                <hr />
+              </div>)
+            })}
+          </div>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
         </div>
       </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+
     </div>
   )
 }

@@ -1,9 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
 html,
 body {
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+body::-webkit-scrollbar {
+  width: 0;
 }
 
 a {
@@ -17,10 +27,19 @@ a {
 
 @media (prefers-color-scheme: dark) {
   html {
-    color-scheme: dark;
+    /* color-scheme: dark; */
   }
   body {
-    color: white;
+    color: rgb(255, 255, 255);
     background: black;
   }
+  
+}
+span{
+  font-family:Montserrat ;
+}
+
+@font-face {
+  font-family: Montserrat;
+  src: url(../fonts/Montserrat-Medium.ttf);
 }
